@@ -570,6 +570,14 @@ class SphinxScraper(DocumentationScraper):
             "cuBLAS",
             "https://docs.nvidia.com/cuda/cublas/index.html",
         ),
+        "prog-guide": (
+            "CUDA C++ Programming Guide",
+            "https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html",
+        ),
+        "best-practices": (
+            "CUDA C++ Best Practices Guide",
+            "https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html",
+        ),
     }
 
     def __init__(self, display_name: str, page_url: str, output_dir: Path):
@@ -896,7 +904,8 @@ def main() -> None:
     )
     parser.add_argument(
         "api_type",
-        choices=["ptx", "runtime", "driver", "math", "cublas", "nccl"],
+        choices=["ptx", "runtime", "driver", "math", "cublas", "nccl",
+                 "prog-guide", "best-practices"],
         help="API type to scrape",
     )
     parser.add_argument(
@@ -926,6 +935,8 @@ def main() -> None:
             "math": "skills/cuda-knowledge/references/cuda-math-docs",
             "cublas": "skills/cuda-knowledge/references/cublas-docs",
             "nccl": "skills/cuda-knowledge/references/nccl-docs",
+            "prog-guide": "skills/cuda-knowledge/references/cuda-prog-guide-docs",
+            "best-practices": "skills/cuda-knowledge/references/cuda-best-practices-docs",
         }
         args.output_dir = Path(default_dirs[args.api_type])
 
@@ -933,8 +944,8 @@ def main() -> None:
     scraper: PTXScraper | APIScraper | SphinxScraper | SphinxMultiPageScraper
     if args.api_type == "ptx":
         scraper = PTXScraper(args.output_dir)
-    elif args.api_type == "cublas":
-        scraper = SphinxScraper.from_doc_type("cublas", args.output_dir)
+    elif args.api_type in SphinxScraper.KNOWN_DOCS:
+        scraper = SphinxScraper.from_doc_type(args.api_type, args.output_dir)
     elif args.api_type in SphinxMultiPageScraper.KNOWN_DOCS:
         scraper = SphinxMultiPageScraper.from_doc_type(
             args.api_type, args.output_dir, args.force

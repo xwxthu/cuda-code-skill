@@ -1,6 +1,6 @@
 ---
 name: cuda-knowledge
-description: "CUDA kernel development, debugging, performance optimization, linear algebra, and multi-GPU communication for Claude Code. Use when writing, debugging, or optimizing CUDA code, GPU kernels, parallel algorithms, or CUDA library calls. Covers cuBLAS/cuBLASLt GEMM operations, CUDA Math API (half, bfloat16, FP8, FP6, FP4), NCCL multi-GPU collectives, non-interactive profiling with nsys/ncu, debugging with cuda-gdb/compute-sanitizer, binary inspection with cuobjdump, and performance analysis workflows. Triggers on CUDA, GPU programming, kernel optimization, nsys, ncu, cuda-gdb, compute-sanitizer, PTX, GPU profiling, parallel performance, cuBLAS, cublasLtMatmul, GEMM, GemmEx, FP8, bfloat16, half precision, __half, __nv_bfloat16, cublasGemmEx, cublasGemmStridedBatchedEx, NCCL, ncclAllReduce, ncclReduceScatter, ncclAllGather, ncclCommInitRank, tensor parallel, pipeline parallel, all-reduce, vLLM CUDA kernels."
+description: "CUDA kernel development, debugging, performance optimization, linear algebra, and multi-GPU communication for Claude Code. Use when writing, debugging, or optimizing CUDA code, GPU kernels, parallel algorithms, or CUDA library calls. Covers CUDA programming model (threads, blocks, grids, warps, SIMT), memory hierarchy (global/shared/register/L2), CUDA C++ language extensions (__global__, __shared__, __launch_bounds__), atomic functions, warp shuffle/vote/reduce, cooperative groups, async barriers, TMA, CUDA Graphs, stream-ordered allocator, virtual memory management, unified memory, compute capabilities, performance best practices (coalescing, occupancy, bank conflicts, instruction throughput), cuBLAS/cuBLASLt GEMM operations, CUDA Math API (half, bfloat16, FP8, FP6, FP4), NCCL multi-GPU collectives, non-interactive profiling with nsys/ncu, debugging with cuda-gdb/compute-sanitizer, binary inspection with cuobjdump, and performance analysis workflows. Triggers on CUDA, GPU programming, kernel optimization, nsys, ncu, cuda-gdb, compute-sanitizer, PTX, GPU profiling, parallel performance, programming model, thread hierarchy, memory hierarchy, warp execution, warp divergence, occupancy, bank conflict, memory coalescing, shared memory, register pressure, async barrier, cuda::barrier, TMA, tensor memory accelerator, CUDA Graphs, cudaGraph, cooperative groups, dynamic parallelism, unified memory, cudaMallocManaged, stream ordered allocator, cudaMallocAsync, virtual memory management, compute capability, cuBLAS, cublasLtMatmul, GEMM, GemmEx, FP8, bfloat16, half precision, __half, __nv_bfloat16, cublasGemmEx, cublasGemmStridedBatchedEx, NCCL, ncclAllReduce, ncclReduceScatter, ncclAllGather, ncclCommInitRank, tensor parallel, pipeline parallel, all-reduce, vLLM CUDA kernels."
 ---
 
 # CUDA Programming Skill
@@ -266,6 +266,37 @@ Complete reference documentation available for grep-based search:
   - `env.md` — full environment variable reference
   - `troubleshooting.md` — hang diagnosis patterns
 
+**CUDA C++ Programming Guide** — `references/cuda-prog-guide-docs/` (709 files, 5.9MB)
+
+- Search guide: `references/cuda-prog-guide.md`
+- Structure: 26 numbered chapter directories (e.g. `5-programming-model/`, `10-c-language-extensions/`, `20-compute-capabilities/`)
+- Use for: CUDA programming model (thread/block/grid/cluster hierarchy), SIMT architecture and warp execution, memory hierarchy concepts, C++ language extensions (`__global__`, `__shared__`, `__device__`, `__launch_bounds__`), atomic functions, warp intrinsics (shuffle/vote/reduce), cooperative groups, async barrier (`cuda::barrier`), TMA async copies, `memcpy_async` / `cuda::pipeline`, CUDA Graphs, stream-ordered allocator (`cudaMallocAsync`), virtual memory management (`cuMemCreate`, `cuMemMap`), unified memory (`cudaMallocManaged`), compute capability feature tables (sm_50 through sm_120), CUDA environment variables
+- Key files:
+  - `5-programming-model/5.2-thread-hierarchy.md` — thread/block/grid/cluster model
+  - `7-hardware-implementation/7.1-simt-architecture.md` — warp execution, divergence
+  - `8-performance-guidelines/8.3.2-device-memory-accesses.md` — coalescing, shared memory, L2
+  - `10-c-language-extensions/10.22-warp-shuffle-functions.md` — `__shfl_sync`, `__shfl_xor_sync`
+  - `10-c-language-extensions/10.26-asynchronous-barrier.md` — `cuda::barrier` arrive/wait patterns
+  - `10-c-language-extensions/10.29-asynchronous-data-copies-using-the-tensor-memory-accelerator-tma.md` — TMA usage
+  - `11-cooperative-groups/11.4-group-types.md` — all cooperative group types
+  - `20-compute-capabilities/20.2-features-and-technical-specifications.md` — architecture specs table
+
+**CUDA C++ Best Practices Guide** — `references/cuda-best-practices-docs/` (138 files, 1.0MB)
+
+- Search guide: `references/cuda-best-practices.md`
+- Structure: 20 numbered chapter directories covering profiling, memory, execution configuration, instruction optimization, deployment
+- Use for: Official optimization methodology (Assess → Parallelize → Optimize → Deploy), memory coalescing rules and examples, shared memory bank conflict diagnosis, pinned memory for H2D transfers, occupancy calculation and block size heuristics, warp divergence patterns to avoid, arithmetic instruction throughput reference, bandwidth calculation (theoretical vs effective), register pressure management, L2 cache window tuning, deployment and compatibility guidance
+- Key files:
+  - `9-performance-metrics/9.2.1-theoretical-bandwidth-calculation.md` — roofline baseline
+  - `10-memory-optimizations/10.2.1-coalesced-access-to-global-memory.md` — coalescing rules with examples
+  - `10-memory-optimizations/10.2.3.1-shared-memory-and-memory-banks.md` — bank conflict diagnosis
+  - `10-memory-optimizations/10.2.3.2-shared-memory-in-matrix-multiplication-cab.md` — tiling worked example
+  - `11-execution-configuration-optimizations/11.1-occupancy.md` — occupancy theory and tuning
+  - `11-execution-configuration-optimizations/11.3-thread-and-block-heuristics.md` — block size selection rules
+  - `12-instruction-optimization/12.1.1-throughput-of-native-arithmetic-instructions.md` — per-op cost table
+  - `13-control-flow/13.1-branching-and-divergence.md` — divergence patterns to avoid
+  - `19-recommendations-and-best-practices/19.1-overall-performance-optimization-strategies.md` — prioritized checklist
+
 Each search guide contains grep examples, documentation structure, and common usage patterns.
 
 **Search strategy:** Use grep/ripgrep to search directly in the `*-docs/` directories. The search guides (`.md` files) provide navigation patterns and common queries.
@@ -298,6 +329,8 @@ grep -r "^## NCCL_" references/nccl-docs/env.md                        # env var
 - `references/nsys-guide.md` — nsys timeline analysis and bottleneck identification
 - `references/ncu-guide.md` — ncu metrics, roofline, occupancy interpretation
 - `references/nvtx-patterns.md` — NVTX instrumentation and profiling patterns
+- `references/cuda-prog-guide.md` — CUDA C++ Programming Guide search guide (programming model, language extensions, compute capabilities)
+- `references/cuda-best-practices.md` — CUDA C++ Best Practices Guide search guide (coalescing, occupancy, instruction throughput, optimization checklist)
 
 ## Checklist Before Optimizing
 
